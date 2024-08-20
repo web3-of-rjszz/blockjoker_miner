@@ -75,7 +75,7 @@ fn fetch_point(token: String, session: Arc<RwLock<String>>) {
     loop {
         let current_session = session.read().unwrap().clone();
         let random_num: IpAddr = generate_random_ip();
-        let res = client.get("https://test2.blockjoker.org/api/v1/accounts")
+        let res = client.get("https://blockjoker.org/api/v2/accounts")
             .header("Accept", "application/json, text/plain, */*")
             .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
             .header("Authorization", format!("Bearer {token}"))
@@ -108,7 +108,7 @@ fn fetch_salt(salt: Arc<RwLock<String>>, token: String, session: Arc<RwLock<Stri
     loop {
         let current_session = session.read().unwrap().clone();
         let random_num: IpAddr = generate_random_ip();
-        let res = client.post("https://test2.blockjoker.org/api/v1/missions")
+        let res = client.post("https://blockjoker.org/api/v2/missions")
             .header("Accept", "application/json, text/plain, */*")
             .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
             .header("Authorization", format!("Bearer {token}"))
@@ -212,7 +212,7 @@ fn generate(salt: Arc<RwLock<String>>, found: Arc<AtomicBool>, token: String, se
                 }
                 println!("尝试提交找到哈希：{},{},{}", current_salt, nonce, hash);
                 let random_num: IpAddr = generate_random_ip();
-                let res = client.post("https://test2.blockjoker.org/api/v1/missions/nonce")
+                let res = client.post("https://blockjoker.org/api/v2/missions/nonce")
                     .header("Accept", "application/json, text/plain, */*")
                     .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
                     .header("Authorization", format!("Bearer {token}"))

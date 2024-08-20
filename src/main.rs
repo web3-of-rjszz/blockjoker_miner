@@ -39,12 +39,13 @@ fn create_shared_client() -> Arc<reqwest::blocking::Client> {
             .unwrap(),
     )
 }
+
 fn fetch_records(token: String, session: Arc<RwLock<String>>) {
     let client = create_shared_client();
     loop {
         let current_session = session.read().unwrap().clone();
         let random_num: IpAddr = generate_random_ip();
-        let res = client.get("https://test2.blockjoker.org/api/v1/missions/records")
+        let res = client.get("https://blockjoker.org/api/v2/missions/records")
             .header("Accept", "application/json, text/plain, */*")
             .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
             .header("Authorization", format!("Bearer {token}"))
@@ -70,6 +71,7 @@ fn fetch_records(token: String, session: Arc<RwLock<String>>) {
         thread::sleep(Duration::from_secs(30));
     }
 }
+
 fn fetch_point(token: String, session: Arc<RwLock<String>>) {
     let client = create_shared_client();
     loop {
@@ -142,15 +144,15 @@ fn fetch_salt(salt: Arc<RwLock<String>>, token: String, session: Arc<RwLock<Stri
                                 }
                             }
                         } else {
-                            println!("无法解析 JSON 响应");
+                            println!("[fetch_salt]无法解析 JSON 响应");
                         }
                     },
                     Err(e) => {
-                        println!("无法读取响应内容: {:?}", e);
+                        println!("[fetch_salt]无法读取响应内容: {:?}", e);
                     }
                 }
             },
-            Err(e) => println!("更新salt失败: {:?}", e),
+            Err(e) => println!("[fetch_salt]更新salt失败: {:?}", e),
         }
 
         thread::sleep(Duration::from_secs(30));
@@ -236,7 +238,7 @@ fn generate(salt: Arc<RwLock<String>>, found: Arc<AtomicBool>, token: String, se
                         // println!("POST 响应状态码: {},salt：{}", response.status(), current_salt);
                         match response.text() {
                             Ok(text) => {
-                                println!("POST 响应内容: {}", text);
+                                println!("[generate] POST 响应内容: {}", text);
                                 if let Ok(json) = serde_json::from_str::<Value>(&text) {
                                     if let Some(ok) = json["ok"].as_bool() {
                                         if ok {
@@ -258,16 +260,16 @@ fn generate(salt: Arc<RwLock<String>>, found: Arc<AtomicBool>, token: String, se
                                         }
                                     }
                                 } else {
-                                    println!("无法解析 JSON 响应");
+                                    println!("[generate] 无法解析 JSON 响应");
                                 }
                             },
                             Err(e) => {
-                                println!("无法读取响应内容: {:?}", e);
+                                println!("[generate] 无法读取响应内容: {:?}", e);
                             }
                         }
                     },
                     Err(e) => {
-                        println!("POST 请求失败: {:?}", e);
+                        println!("[generate] POST 请求失败: {:?}", e);
                     }
                 }
                 found.store(false, Ordering::Release);
